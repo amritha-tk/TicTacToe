@@ -14,9 +14,10 @@ toss(){
   player=$((RANDOM%2))
   if [ $player -eq '1' ]
     then
-      echo "Player 1's Turn"
+      echo "Player 1's Turn and "SYM=O
     else
-      echo "Player 2's Turn"
+      echo "Player 2's Turn and "SYM=X
   fi
 }
 toss
+
