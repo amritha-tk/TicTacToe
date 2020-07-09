@@ -7,17 +7,32 @@ resetBoard(){
   echo "====================="
   echo "Game started"
 }
+resetBoard
 
 toss(){
-  player=$((RANDOM%2))
+ player=$((RANDOM%2))
   if [ $player -eq '1' ]
     then
-      echo "Player 1's Turn and "SYM=O
+      echo "I have won the toss and Starting the game "
+	  read -p "What symbol do you choose 1.X  2.O" sym
     else
-      echo "Player 2's Turn and "SYM=X
+      echo "Computer won the game and starting the game"
+	  sym=$((RANDOM%2+1))
   fi
 }
+
+choose(){
 toss
+if [ $sym -eq '1' ]
+	then
+		sym="X"
+		echo "Chooses X"
+	else
+		sym="O"
+		echo "Chooses O"
+fi
+}
+choose
 
 viewBoard(){
   echo "r\c 0 1 2"
@@ -26,4 +41,6 @@ viewBoard(){
   echo "2   ${Arr[6]} ${Arr[7]} ${Arr[8]}"
 }
 viewBoard
+
+
 
