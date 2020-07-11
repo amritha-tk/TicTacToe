@@ -35,7 +35,7 @@ if [ $sym_num -eq '1' ]
                 sym="O"
                 echo "Chooses O"
 fi
-
+	
 }
 
 
@@ -46,7 +46,6 @@ viewBoard(){
   echo "1   ${Arr[3]} ${Arr[4]} ${Arr[5]}"
   echo "2   ${Arr[6]} ${Arr[7]} ${Arr[8]}"
 }
-
 
 
 winCheck() {
@@ -61,10 +60,10 @@ rowCheck(){
 
 for (( firstnum=0; $firstnum -le $size*$size; $firstnum+$size ))
 	do
-	
+
 	secondnum=$(($firstnum+1))
 	thirdnum=$(($firstnum+2))
-	
+
 	if [ ${Arr[$firstnum]} != "." ] && [ ${Arr[$firstnum]} == ${Arr[$secondnum]} ] && [ ${Arr[$secondnum]} == ${Arr[$thirdnum]} ]
 	then
 		gamestatus=="Win"
@@ -72,7 +71,8 @@ for (( firstnum=0; $firstnum -le $size*$size; $firstnum+$size ))
 	    columnCheck
 	fi
 	done
-}
+0===0}
+
 
 columnCheck(){
 
@@ -84,15 +84,15 @@ for (( firstnum=0; $firstnum -le $size*$size; $firstnum++ ))
 	do
 	secondnum=$(($firstnum+3))
 	thirdnum=$(($firstnum+6))
-
+	
 	if [ ${Arr[$firstnum]} != "." ] && [ ${Arr[$firstnum]} == ${Arr[$secondnum]} ] && [ ${Arr[$secondnum]} == ${Arr[$thirdnum]} ] 
 	then
 		gamestatus=="Win"
-
+		
 	else
 	    diagonalCheck
 	fi
-
+	
 	done
 }
 
@@ -101,38 +101,75 @@ diagonalCheck(){
 #checkmatch 2 4 6
 
 #Diagonal check left
-        firstnum=0 
+    firstnum=0 
 	secondnum=$(($firstnum+4))
 	thirdnum=$(($secondnum+4))
-
-	if [ ${Arr[$firstnum]} != "." ] && [ ${Arr[$firstnum]} == ${Arr[$secondnum]} ] && [ ${Arr[$secondnum]} == ${Arr[$thirdnum]} ]
-	then
-		gamestatus=="Win"
-	fi
-
-
-#Diagonal check right
-        firstnum=2
-	secondnum=$(($firstnum+2))
-	thirdnum=$(($secondnum+2))
-
+	
 	if [ ${Arr[$firstnum]} != "." ] && [ ${Arr[$firstnum]} == ${Arr[$secondnum]} ] && [ ${Arr[$secondnum]} == ${Arr[$thirdnum]} ]
 	then
 		gamestatus=="Win"
 	fi
 }
+	
+#Diagonal check right
+    firstnum=2
+	secondnum=$(($firstnum+2))
+	thirdnum=$(($secondnum+2))
+	
+	if [ ${Arr[$firstnum]} != "." ] && [ ${Arr[$firstnum]} == ${Arr[$secondnum]} ] && [ ${Arr[$secondnum]} == ${Arr[$thirdnum]} ]
+	then
+		gamestatus=="Win"
+	fi	
+}
+
+
+
+FillPositionWinBlock() {
+
+if [ ${CheckArr[$firstnum]} == 0 ]
+		then
+			${Arr[$firstnum]} = $sym
+			filled=1
+		
+		elif [ ${CheckArr[$secondnum]} == 0 ]
+		then
+			${Arr[$secondnum]} = $sym
+			filled=1
+			
+		else
+			${Arr[$thirdnum]} = $sym
+			filled=1
+		
+		fi
+}
+
+
 
 
 convertBlockToNumbers(){
 
 CheckArr=Arr
 
-opp_sym = getSymbol $((sym_num%2+1))
+# For getting opponent symbol
+opp_sym_num = $((sym_num%2+1))
+case  $opp_sym_num in
+    1)
+      opp_sym="X"
+      ;;
+    2)
+      opp_sym="O"
+      ;;
+    *)
+      echo "Unknown symbol"
+      ;;
+esac
+
+# For assigining table to numerical values
 for (( checkpos=0; $checkpos -lt $size*$size; $checkpos++ ))
 	do
-
-	CheckArr[$checkpos]
-	case  ${Arr[$checkpos]}  in
+	
+	CheckArr[$checkpos] 
+	case  ${Arr[$checkpos]} in
     $sym)
 		CheckArr[$checkpos]=1
 		;;
@@ -143,111 +180,78 @@ for (( checkpos=0; $checkpos -lt $size*$size; $checkpos++ ))
 		CheckArr[$checkpos]=0
       ;;
     esac
-
+	
 	done
 }
 
 CompPlayGame() {
 
-winRowPosition
-}
-
-winRowPosition() {
+local filled=0
+local wincount=2
+local blockcount=8
 
 convertBlockToNumbers
+
+winBlockRowPosition $wincount
+
+if [ $filled == 0 ]; then
+	winBlockRowPosition $blockcount
+fi
+}
+
+winBlockRowPosition() {
+
 
 #checkmatch 0 1 2
 #checkmatch 3 4 5
 #checkmatch 6 7 8
 
-for (( firstnum=0; $firstnum -le $size*$size; $firstnum+$size ))
+for (( firstnum=0; $firstnum -le $size*$size && filled=0; $firstnum+$size ))
 	do
-
+	
 	secondnum=$(($firstnum+1))
 	thirdnum=$(($firstnum+2))
-
-	if [ ${CheckArr[$firstnum]}+${CheckArr[$secondnum]}+${CheckArr[$thirdnum]} == 2 ]
+	
+	if [ ${CheckArr[$firstnum]}+${CheckArr[$secondnum]}+${CheckArr[$thirdnum]} == $1 ]
 	then
-		if [ ${CheckArr[$firstnum]} == 0 ]
-		then
-			${Arr[$firstnum]} = $sym
-			break
-
-		elif [ ${CheckArr[$secondnum]} == 0 ]
-		then
-			${Arr[$secondnum]} = $sym
-			break
-
-		else
-			${Arr[$thirdnum]} = $sym
-			break
-
-		fi
-	else
-	winColumnPosition
+		FillPositionWinBlock
+	else 
+		winColumnPosition
 	fi
-
+	
 done
 
 }
 
-winColumnPosition() {
+winBlockColumnPosition() {
 
-for (( firstnum=0; $firstnum -le $size*$size; $firstnum+$size ))
+for (( firstnum=0; $firstnum -le $size*$size && filled=0; $firstnum+$size ))
 	do
-
+	
 	secondnum=$(($firstnum+3))
 	thirdnum=$(($firstnum+6))
-
-	if [ ${CheckArr[$firstnum]}+${CheckArr[$secondnum]}+${CheckArr[$thirdnum]} == 2 ]
+	
+	if [ ${CheckArr[$firstnum]}+${CheckArr[$secondnum]}+${CheckArr[$thirdnum]} == $1 ]
 	then
-		if [ ${CheckArr[$firstnum]} == 0 ]
-		then
-			${Arr[$firstnum]} = $sym
-			break
-
-		elif [ ${CheckArr[$secondnum]} == 0 ]
-		then
-			${Arr[$secondnum]} = $sym
-			break
-
-		else
-			${Arr[$thirdnum]} = $sym
-			break
-
-		fi
-	else
-	winDiagPosition
+		FillPositionWinBlock
+	else 
+		winDiagPosition
 	fi
-
+	
 done
 }
 
-winDiagPosition() {
+winBlockDiagPosition() {
 
 #Diagonal check left
 
-        firstnum=0
+    firstnum=0 
 	secondnum=$(($firstnum+4))
 	thirdnum=$(($secondnum+4))
-
-	if [ ${CheckArr[$firstnum]}+${CheckArr[$secondnum]}+${CheckArr[$thirdnum]} == 2 ]
+	
+	if [ ${CheckArr[$firstnum]}+${CheckArr[$secondnum]}+${CheckArr[$thirdnum]} == $1 ]
 	then
-		if [ ${CheckArr[$firstnum]} == 0 ]
-		then
-			${Arr[$firstnum]} = $sym
-			break
-
-		elif [ ${CheckArr[$secondnum]} == 0 ]
-		then
-			${Arr[$secondnum]} = $sym
-			break
-
-		else
-			${Arr[$thirdnum]} = $sym
-			break
-
-		fi
+		FillPositionWinBlock
 	else
 
 
@@ -255,31 +259,14 @@ winDiagPosition() {
     firstnum=2
 	secondnum=$(($firstnum+2))
 	thirdnum=$(($secondnum+2))
+	
 
-
-if [ ${CheckArr[$firstnum]}+${CheckArr[$secondnum]}+${CheckArr[$thirdnum]} == 2 ]
-	then
-		if [ ${CheckArr[$firstnum]} == 0 ]
+	if [ ${CheckArr[$firstnum]}+${CheckArr[$secondnum]}+${CheckArr[$thirdnum]} == $1 ]
 		then
-			${Arr[$firstnum]} = $sym
-			break
-
-		elif [ ${CheckArr[$secondnum]} == 0 ]
-		then
-			${Arr[$secondnum]} = $sym
-			break
-			
-		else
-			${Arr[$thirdnum]} = $sym
-			break
-		
-		fi 
-fi
-
+			FillPositionWinBlock 
+	fi
 fi
 }
-
-
 
 
 getSymbol(){
@@ -305,7 +292,7 @@ getSymbol $sym_num
 
 }
 
-	
+
 
 set(){
 
