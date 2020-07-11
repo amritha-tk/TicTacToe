@@ -126,12 +126,13 @@ diagonalCheck(){
 convertBlockToNumbers(){
 
 CheckArr=Arr
-opp_sym=getSymbol($sym_num%2+1)
+
+opp_sym = getSymbol $((sym_num%2+1))
 for (( checkpos=0; $checkpos -lt $size*$size; $checkpos++ ))
 	do
 
 	CheckArr[$checkpos]
-	case (( ${Arr[$checkpos]} in
+	case  ${Arr[$checkpos]}  in
     $sym)
 		CheckArr[$checkpos]=1
 		;;
@@ -273,7 +274,9 @@ if [ ${CheckArr[$firstnum]}+${CheckArr[$secondnum]}+${CheckArr[$thirdnum]} == 2 
 			break
 		
 		fi 
-	fi
+fi
+
+fi
 }
 
 
